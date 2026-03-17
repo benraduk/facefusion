@@ -226,16 +226,27 @@ def collect_model_downloads() -> Tuple[DownloadSet, DownloadSet]:
 	return model_hash_set, model_source_set
 
 
-def get_inference_pool() -> InferencePool:
+def get_inference_pool_model_names() -> List[str]:
 	model_names = [ state_manager.get_item('lip_syncer_model') ]
+	if has_pure_motion():
+		model_names.append('live_portrait')
+	return model_names
+
+
+def get_inference_pool() -> InferencePool:
+	model_names = get_inference_pool_model_names()
 	_, model_source_set = collect_model_downloads()
 
 	return inference_manager.get_inference_pool(__name__, model_names, model_source_set)
 
 
 def clear_inference_pool() -> None:
-	model_names = [ state_manager.get_item('lip_syncer_model') ]
-	inference_manager.clear_inference_pool(__name__, model_names)
+	lip_syncer_model = state_manager.get_item('lip_syncer_model')
+
+	# Clear both variants so toggling pure_motion cannot reuse a stale pool
+	# that was created without the LivePortrait sessions.
+	inference_manager.clear_inference_pool(__name__, [ lip_syncer_model ])
+	inference_manager.clear_inference_pool(__name__, [ lip_syncer_model, 'live_portrait' ])
 
 
 @lru_cache(maxsize = 1)
