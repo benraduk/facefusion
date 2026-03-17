@@ -131,6 +131,7 @@ def listen() -> None:
 		'face_swapper_weight_slider',
 		'frame_colorizer_blend_slider',
 		'frame_enhancer_blend_slider',
+		'lip_syncer_pure_motion_slider',
 		'lip_syncer_weight_slider',
 		'reference_face_distance_slider',
 		'face_selector_age_range_slider',
